@@ -1,14 +1,8 @@
 require("dotenv").config();
-var table = require("table");
 var mysql = require("mysql");
-var inquirer = require("inquirer");
-// var customer = require("./bamazonCustomer");
-// var manager = require("./bamazonManager");
-// var supervisor = require("./bamazonSupervisor");
 const log = console.log;
+const Table = require('cli-table');
 
-
-//connection string
 var connection = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -17,56 +11,29 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
-connection.connect(function(err){
-    if (err){
-        log(err);
-        throw err;
-    }
+var table = new Table({
+    head: ["ID", "Name", "Department", "Price', 'Qty"],
+    colWidths: [5, 20, 40, 15, 15]
+  });
+
+connection.connect(function (err) {
+    if (err) throw err;
+
     else log("You are connected as: " + connection.threadId);
 });
 
-//user selects role
-// inquirer.prompt([
-//     {
-//         type: "list",
-//         name: "role",
-//         message: "Welcome to Bamazon! what role do you want proceed?",
-//         choices: ["Customer", "Manager", "Supervisor"],
-//         filter: function(val){return val.toLowerCase()}
-//     },
-//     {
-//         type: "confirm",
-//         message: "Confirm",
-//         name: "confirm",
-//         default: true
-//     }
-// ]).then(function(response){
-
-//     let val = response.role;
-//             switch (val) {
-//                 case "customer":
-//                     customer();
-//                     break;
-
-//                 case "manager":
-//                     manager();
-//                     break;
-
-//                 case "supervisor":
-//                     supervisor();
-//                     break;
-//             }
-// });
-
-
-// function customer(){
-//     console.log("Customer");
-// }
-
-// function manager(){
-//     console.log("Manager");
-// }
-
-// function supervisor(){
-//     console.log("Supervisor");
-// }
+var query = "SELECT * FROM products";
+connection.query(query, function (err, res) {
+    if (err) throw err;
+    
+    for (var i = 0; i < res.length; i++) {
+        table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        res[i].price,
+        res[i].stock_quanity
+        ]);
+    console.log(table.toLocalString());
+    }
+});
