@@ -1,5 +1,5 @@
 require("dotenv").config();
-var mysql = require("mysql");
+const mysql = require("mysql");
 const log = console.log;
 const Table = require('cli-table');
 
@@ -12,8 +12,8 @@ var connection = mysql.createConnection({
 });
 
 var table = new Table({
-    head: ["ID", "Name", "Department", "Price', 'Qty"],
-    colWidths: [5, 20, 40, 15, 15]
+    head: ["ID", "Name", "Department", "Price", "Qty"],
+    colWidths: [5, 30, 40, 10, 10]
   });
 
 connection.connect(function (err) {
@@ -31,9 +31,9 @@ connection.query(query, function (err, res) {
         res[i].item_id,
         res[i].product_name,
         res[i].department_name,
-        res[i].price,
-        res[i].stock_quanity
+        res[i].price.toFixed(2),
+        res[i].stock_quantity
         ]);
-    console.log(table.toLocalString());
     }
+    console.log(table.toString());
 });

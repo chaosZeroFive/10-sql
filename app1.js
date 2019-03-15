@@ -1,20 +1,43 @@
 require("dotenv").config();
-var mysql = require("mysql");
-var Table = require("cli-table");
+const mysql = require("./node_modules/mysql");
+const inquirer = require("./node_modules/inquirer");
+const log = console.log;
+const Table = require("./node_modules/cli-table");
 
-var connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: "bamazon"
+inquirer.prompt([
+    {
+        type: "list",
+        name: "role",
+        message: "Please select your role",
+        choices:
+            [
+                "Manager",
+                "Supervisor"
+            ],
+        filter: function (val) {
+            return val.toLowerCase();
+        }
+    }
+]).then(answers =>{
+    let r = answers.role.toString();
+    log(r);
+    switch (r) {
+        case "manager":
+            manager();
+            break;
+        
+        case "supervisor":
+            supervisor();
+            break;
+        default:
+            log("No role was selected");
+    }
 });
 
-connection.connect(function (err) {
-    if (err) throw err;
-});
+function manager() {
+    log("you are logged in as  Manager");
+}
 
-connection.query("SELECT * FROM products", function (err, results) {
-    if (err) throw err;
-    console.log(results.toString());
-});
+function supervisor() {
+    log("you are logged in as Supervisor");
+}

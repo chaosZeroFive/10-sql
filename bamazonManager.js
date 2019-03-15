@@ -1,3 +1,4 @@
 function manager(){
-    console.log("Manager");
+    console.log("you are logged in as  Manager");
 }
+export { manager };

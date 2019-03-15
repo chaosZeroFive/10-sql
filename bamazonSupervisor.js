@@ -1,3 +1,5 @@
 function supervisor(){
-    console.log("Supervisor");
+    console.log("you are logged in as Supervisor");
 }
+
+export { supervisor };

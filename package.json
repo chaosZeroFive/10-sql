@@ -20,6 +20,7 @@
     "chalk": "^2.4.2",
     "cli-table": "^0.3.1",
     "dotenv": "^6.2.0",
+    "eslint-plugin-import": "^2.16.0",
     "inquirer": "^6.2.2",
     "mysql": "^2.16.0"
   }
