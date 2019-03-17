@@ -31,7 +31,7 @@ connection.query(query, function (err, res) {
             res[i].item_id,
             res[i].product_name,
             res[i].department_name,
-            res[i].price.toFixed(2),
+            res[i].product_price.toFixed(2),
             res[i].stock_quantity
         ]);
     }

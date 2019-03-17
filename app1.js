@@ -1,8 +1,9 @@
 require("dotenv").config();
 const mysql = require("./node_modules/mysql");
 const inquirer = require("./node_modules/inquirer");
-const log = console.log;
 const Table = require("./node_modules/cli-table");
+const manager = require("./bamazonManager");
+const supervisor = require("./bamazonSupervisor");
 
 inquirer.prompt([
     {
@@ -20,7 +21,6 @@ inquirer.prompt([
     }
 ]).then(answers =>{
     let r = answers.role.toString();
-    log(r);
     switch (r) {
         case "manager":
             manager();
@@ -33,11 +33,3 @@ inquirer.prompt([
             log("No role was selected");
     }
 });
-
-function manager() {
-    log("you are logged in as  Manager");
-}
-
-function supervisor() {
-    log("you are logged in as Supervisor");
-}
