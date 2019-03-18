@@ -1,43 +1,3 @@
-require("dotenv").config();
-const mysql = require("mysql");
-const Table = require('cli-table');
-const inquirer = require("./node_modules/inquirer");
-const chalk = require("./node_modules/chalk");
-import * as prompts from "./prompts";
-
-// Customer CheckOut - processes the purchase 
-    // 1. selects the item_id
-    // 2. checks if there is enough in inventory
-    // 3. multiplies the number purchased by the price
-    // 4. totals the purchase
-
-// Inventory Management - updates store inventory
-    // 5. subtracts qty from inventory
-
-// Sales management - creates a new sales transaction
-    // log product_name to trans_product
-    // log department name to trans_department
-    // log price to unit_price
-    // log the number units sold to unit_total
-
-var connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: "bamazon"
-});
-
-var table = new Table({
-    head: ["ID", "Name", "Department", "Price", "Qty"],
-    colWidths: [5, 30, 40, 10, 10]
-});
-
-function shop() {
-    viewAll();
-}
-
-
 function checkOut(id, qty) {
     prompts.buy(id, qty);
     let query = "SELECT * FROM products WHERE item_id = " + id;
@@ -49,13 +9,17 @@ function checkOut(id, qty) {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
             if (qty <= res[i].stock_quantity) {
-                var cost = res[i].price.toFixed(2) * qty;
+                let cost = res[i].price.toFixed(2) * qty;
+                let prod = res[i].product_name;
+                let dep = res[i].department_name;
+                let price = res[i].product_price;
                 
                 console.log(`
                 ${chalk.yellow("Your total is: $" + cost)}
                 ${chalk.yellow("Thank You for your purchase!")}
                 `);
                 manageInventory(id, qty, op);
+                manageSales(qty, cost, prod, dep, price);
                 
             } else {
                 console.log(`
@@ -68,42 +32,47 @@ function checkOut(id, qty) {
     });
 }
 
-var manageInventory = function(id, qty) {
-
-    connection.query("UPDATE products SET stock_quantity = stock_quantity" + op + qty + "WHERE item_id = " + id);
+// called from here
+var manageInventory = function (id, qty, op) {
+    connection.connect(function (err) {
+        if (err) throw err;
+        else {
+            connection.query("UPDATE products SET stock_quantity = stock_quantity" + op + qty + "WHERE item_id = " + id);
+        }
+    });
+    connection.end();
+    
 }
 
-function manageSales() {
+function manageSales(qty, cost, prod, dep, price) {
     connection.connect(function (err) {
         if (err) throw err;
         else {
             connection.query("UPDATE sales SET product_sales = product_sales + " + cost);
         }
     });
-    
+    connection.end();
 }
 
-function viewAll() {
+exports.viewAll = function() {
     let query = "SELECT * FROM products";
     connection.connect(function (err) {
-        if (err) throw err;
-        else {
-            connection.query(query, function (err, res) {
-                if (err) throw err;
-                for (var i = 0; i < res.length; i++) {
-                    table.push([
-                        res[i].item_id,
-                        res[i].product_name,
-                        res[i].department_name,
-                        res[i].price.toFixed(2),
-                        res[i].stock_quantity
-                    ]);
-                }
-                console.log(table.toString());
-            });
-        }
+        if (err) throw err; 
     });
-    connection.end();
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+            table.push([
+                res[i].item_id,
+                res[i].product_name,
+                res[i].department_name,
+                res[i].product_price.toFixed(2),
+                res[i].stock_quantity
+            ]);
+        }
+        console.log(table.toString());
+    });
+    //connection.end();
 }
 
 // returns all items that have at least 1 in stock

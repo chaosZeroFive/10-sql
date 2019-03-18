@@ -1,6 +1,7 @@
+const inquirer = require("./node_modules/inquirer");
+var actions = require("./actions");
 
-
-var managerOptions = function () {
+function managerOptions() {
     inquirer.prompt([{
         type: "list",
         name: "action",
@@ -33,9 +34,7 @@ var managerOptions = function () {
     });
 }
 
-module.exports = managerOptions();
-
-var managerTasks = function () {
+function managerTasks() {
     inquirer.prompt([{
         type: "list",
         name: "action",
@@ -68,9 +67,8 @@ var managerTasks = function () {
     });
 }
 
-module.exports = managerTasks();
 
-var supervisorOptions = function () {
+function supervisorOptions() {
     inquirer.prompt([{
         type: "list",
         name: "action",
@@ -102,9 +100,24 @@ var supervisorOptions = function () {
         }
     });
 }
-module.exports = supervisorOptions();
 
-var buy = function () {
+exports.shop = function () {
+    inquirer.prompt([
+        {
+            type: "confirm",
+            name: "shop",
+            message: "Do you want to make a purchase?",
+            default: true
+        }
+    ]).then(answers => {
+        if (shop) {
+            buy();
+        }
+        else connection.end();
+    })
+}
+
+function buy(id, qty) {
     inquirer.prompt([{
             type: "input",
             name: "ID",
@@ -123,9 +136,7 @@ var buy = function () {
     });
 }
 
-module.exports = buy(id, qty);
-
-var managerNext = function () {
+function managerNext() {
     inquirer.prompt([{
         type: "list",
         name: "action",
@@ -149,9 +160,8 @@ var managerNext = function () {
         }
     });
 }
-module.exports = managerNext();
 
-var supervisorNext = function () {
+function supervisorNext() {
     inquirer.prompt([{
         type: "list",
         name: "action",
@@ -175,4 +185,34 @@ var supervisorNext = function () {
         }
     });
 }
-module.exports = supervisorNext();
+
+exports.storeFront = function () {
+    inquirer.prompt([{
+        type: "list",
+        name: "role",
+        message: "Please select your role",
+        choices: [
+            "Customer",
+            "Manager",
+            "Supervisor"
+        ],
+        filter: function (val) {
+            return val.toLowerCase();
+        }
+    }]).then(answers => {
+        let c = answers.role.toString();
+        switch (c) {
+            case "customer":
+                actions.viewAll();
+                break;
+
+            case "manager":
+                manager();
+                break;
+            case "manager":
+                manager();
+                break;
+        }
+    });
+}
+
