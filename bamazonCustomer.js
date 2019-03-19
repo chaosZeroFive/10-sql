@@ -17,11 +17,11 @@ var table = new Table({
     colWidths: [5, 30, 40, 10, 10]
 });
 
-connection.connect(function (err) {
-    if (err) throw err;
-});
 
 function start() {
+    connection.connect(function (err) {
+        if (err) throw err;
+    });
     let query = "SELECT * FROM products;";
     connection.query(query, function (err, res) {
         if (err) throw err;
@@ -52,7 +52,7 @@ function shop() {
         if (answers.shop === "Yes") {
             purchase();
             
-        } else connection.end();
+        }
     });
 }
 
@@ -112,6 +112,14 @@ function checkOut(id, qty) {
                             return val.toLowerCase();
                         }
                     }]).then(answers => {
+                        switch (answers.action) {
+                            case "continue shopping":
+                                start();
+                                break;
+                            case "exit":
+                                exitBamazon();
+                        }
+
                         managment(newSale);
                         manageSales(newSale);
                         
@@ -124,47 +132,47 @@ function checkOut(id, qty) {
 
 function managment(newSale) {
     let id = newSale.get(0);
-    console.log("From managment() " + id);
+    //console.log("From managment() " + id);
     let qty = newSale.get(6);
-    console.log("From managment() " + qty);
+    //console.log("From managment() " + qty);
     let query = "UPDATE products SET quantity = quantity - " + qty + " WHERE id = " + id + ";";
-    console.log(query);
+    //console.log(query);
     connection.query(query, function (err, res) {
         if (err) throw err;
 
-        else {
-            console.log("inventory has been updated");
-        }
+        // else {
+        //     console.log("inventory has been updated");
+        // }
     })
 }
 
 function manageSales(newSale) {
 
     let product = "'" + newSale.get(1) + "'";
-    console.log("From products " + product);
+    //console.log("From products " + product);
     let department = "'" + newSale.get(2) + "'";
-    console.log("From department " + department);
+    //console.log("From department " + department);
     let price = newSale.get(3);
-    console.log("From price " + price);
+    //console.log("From price " + price);
     let quantity = newSale.get(4);
-    console.log("From quantity " + quantity);
+    //console.log("From quantity " + quantity);
     let cost = newSale.get(5);
-    console.log("From cost " + cost);
+    //console.log("From cost " + cost);
     let qty = newSale.get(6);
-    console.log("From qty " + qty);
+    //console.log("From qty " + qty);
     let insert = "INSERT INTO sales ( trans_product, trans_total, trans_department, unit_price, unit_total ) ";
     let values = "VALUES ( " + product + ", " + cost + ", " + department + ", " + price + ", " + qty + " );";
     let query = insert + values;
-    console.log("From query " + query);
+    //console.log("From query " + query);
     connection.query(query, function (err, res) {
         if (err) throw err;
 
-        else console.log("Added to sales table");
+        //else console.log("Added to sales table");
     });
 }
 
 function exitBamazon() {
-    connection.end();
+    //connection.end();
     console.log("Thanks for visiting Bamazon");
 }
 
