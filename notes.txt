@@ -75,3 +75,8 @@ function customer() {
 // function supervisor(){
 //     console.log("User Selected Supervisor");
 // }
+
+
+
+${chalk.yellow("We apologize, but we are unable to fulfill your order at this time")}
+                    ${chalk.yellow("There is only " + res[0].stock_quantity + " of " + res[0].product_name + " available to complete your order.")}
