@@ -79,4 +79,15 @@ function customer() {
 
 
 ${chalk.yellow("We apologize, but we are unable to fulfill your order at this time")}
-                    ${chalk.yellow("There is only " + res[0].stock_quantity + " of " + res[0].product_name + " available to complete your order.")}
+${chalk.yellow("There is only " + res[0].quantity + " of " + res[0].product + " available to complete your order.")}
+
+
+let c = answers.action.toString();
+                        switch (c) {
+                            case "continue shopping":
+                                start();
+                                break;
+                            case "exit":
+                                exitBamazon();
+                                break;
+                        }
