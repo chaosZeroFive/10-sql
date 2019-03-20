@@ -1,6 +1,4 @@
 node_modules
 .DS_Store
 .env
-./seed-data.csv
-./prompts.js
-./actions.js
+.vscode
