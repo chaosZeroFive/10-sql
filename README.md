@@ -43,9 +43,13 @@ Add the code below to the .env file, save, and close
 ```
 Open MySQL Workbench to the local instance created during installation
 
-Click add SQL 
+Click add SQL ![alt](https://github.com/chaosZeroFive/10-sql/blob/master/demo/add-sql.PNG)
 
-Copy the contents of seed.sql to an SQL file in Workbench 
+Copy the contents of seed.sql to the SQL editor in Workbench
+
+Click the Execute button ![alt](https://github.com/chaosZeroFive/10-sql/blob/master/demo/run.PNG)
+
+You should see a message that indicates your action was successful ![alt](https://github.com/chaosZeroFive/10-sql/blob/master/demo/success.PNG)
 
 Your root directory should look like this
 
