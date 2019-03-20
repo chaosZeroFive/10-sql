@@ -28,6 +28,9 @@
 
 ## Installation
 
+### Clone the Repository
+> git clone https://this-repository
+
 ### Install dependencies
   > npm install
 
@@ -59,8 +62,6 @@ Your root directory should look like this
         .env
         .gitignore
         bamazonCustomer.js
-        bamazonManager.js
-        bamazonSupervisor.js
         package-lock.json
         package.json
         seed.sql
