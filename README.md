@@ -67,3 +67,6 @@ Your root directory should look like this
 ```
 
 ## How to Use
+
+Open a Terminal, navigate to the root directory, and type:
+> node bamazon.js
