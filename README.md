@@ -41,6 +41,25 @@ Add the code below to the .env file, save, and close
     DB_USER = <your user name>
     DB_PASS = <your password>
 ```
-Run seed.sql to create a database with the needed tables
+Open MySQL Workbench to the local instance created during installation
+
+Click add SQL 
+
+Copy the contents of seed.sql to an SQL file in Workbench 
+
+Your root directory should look like this
+
+```
+    ./bamazon
+        ./node_modules
+        .env
+        .gitignore
+        bamazonCustomer.js
+        bamazonManager.js
+        bamazonSupervisor.js
+        package-lock.json
+        package.json
+        seed.sql
+```
 
 ## How to Use
