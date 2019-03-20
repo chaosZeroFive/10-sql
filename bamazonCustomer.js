@@ -17,11 +17,11 @@ var table = new Table({
     colWidths: [5, 30, 40, 10, 10]
 });
 
+connection.connect(function (err) {
+    if (err) throw err;
+});
 
 function start() {
-    connection.connect(function (err) {
-        if (err) throw err;
-    });
     let query = "SELECT * FROM products;";
     connection.query(query, function (err, res) {
         if (err) throw err;
@@ -35,144 +35,108 @@ function start() {
             ]);
         }
         console.log(table.toString());
-        shop();
+        inquirer.prompt([{
+            type: "list",
+            name: "shop",
+            message: "Do you want to make a purchase?",
+            choices: [
+                "Yes",
+                "No"
+            ]
+        }]).then(answers => {
+            if (answers.shop === "Yes") {
+                inquirer.prompt([{
+                    type: "input",
+                    name: "ID",
+                    message: "Enter the ID of the product you would like to purchase",
+                    filter: Number
+                },
+                {
+                    type: "input",
+                    name: "qty",
+                    message: "Enter the quantity you would like to purchase",
+                    filter: Number
+                }
+                ]).then(answers => {
+                    let id = parseInt(answers.ID);
+                    let qty = parseInt(answers.qty);
+                    connection.query("SELECT * FROM products WHERE id = " + id, function (err, res) {
+                        if (err) throw err;
+                        for (var i = 0; i < res.length; i++) {
+                            let quantity = res[i].quantity;
+                            let product = res[i].product;
+                            let department = res[i].department;
+                            let price = res[i].price.toFixed(2);
+                            let cost = price * qty;
+                            if (quantity >=  qty) {
+                                console.log(`
+                                    ${chalk.yellow("Your total is: $" + cost)}
+                                    ${chalk.yellow("Thank You for your purchase!")}
+                                `);
+                                next();
+                                managment(id, qty);
+                                manageSales(product, cost, department, price, qty);
+                            }
+                            else {
+                                console.log(`
+                                    ${chalk.yellow("We apologize, but we are unable to fulfill your order at this time")}
+                                    ${chalk.yellow("There is only " + quantity + " of " + product + " available to complete your order.")}
+                                `);
+                                next();
+                            }
+                        }
+                    });
+                });
+            }
+        });
     });
 }
 
-function shop() {
+function next() {
     inquirer.prompt([{
         type: "list",
-        name: "shop",
-        message: "Do you want to make a purchase?",
+        name: "action",
+        message: "What would you like to do next?",
         choices: [
-            "Yes",
-            "No"
-        ]
+            "Continue Shopping",
+            "Exit"
+        ],
+        filter: function (val) {
+            return val.toLowerCase();
+        }
     }]).then(answers => {
-        if (answers.shop === "Yes") {
-            purchase();
-            
+        switch (answers.action) {
+            case "continue shopping":
+                start();
+                break;
+            case "exit":
+                exitBamazon();
         }
     });
 }
 
-function purchase() {
-    inquirer.prompt([{
-            type: "input",
-            name: "ID",
-            message: "Enter the ID of the product you would like to purchase",
-            filter: Number
-        },
-        {
-            type: "input",
-            name: "qty",
-            message: "Enter the quantity you would like to purchase",
-            filter: Number
-        }
-    ]).then(answers => {
-        let id = parseInt(answers.ID);
-        let qty = parseInt(answers.qty);
-        checkOut(id, qty);
-    });
-}
-
-function checkOut(id, qty) {
-    let query = "SELECT * FROM products WHERE id = " + id + ";";
-    connection.query(query, function (err, res) {
-        if (err) throw err;
-        else {
-            for (var i = 0; i < res.length; i++) {
-                if (qty <= res[i].quantity) {
-                    let price = res[i].price.toFixed(2);
-                    let cost = price * qty;
-                    let newSale = new Map();
-                    
-                    newSale.set(0, res[i].id);
-                    newSale.set(1, res[i].product);
-                    newSale.set(2, res[i].department);
-                    newSale.set(3, price);
-                    newSale.set(4, res[i].quantity);
-                    newSale.set(5, cost);
-                    newSale.set(6, qty);
-
-                    console.log(`
-                    ${chalk.yellow("Your total is: $" + cost)}
-                    ${chalk.yellow("Thank You for your purchase!")}
-                    `);
-                    
-                    inquirer.prompt([{
-                        type: "list",
-                        name: "action",
-                        message: "What would you like to do next?",
-                        choices: [
-                            "Continue Shopping",
-                            "Exit"
-                        ],
-                        filter: function (val) {
-                            return val.toLowerCase();
-                        }
-                    }]).then(answers => {
-                        switch (answers.action) {
-                            case "continue shopping":
-                                start();
-                                break;
-                            case "exit":
-                                exitBamazon();
-                        }
-
-                        managment(newSale);
-                        manageSales(newSale);
-                        
-                    });
-                }
-            }
-        }
-    });
-}
-
-function managment(newSale) {
-    let id = newSale.get(0);
-    //console.log("From managment() " + id);
-    let qty = newSale.get(6);
-    //console.log("From managment() " + qty);
+function managment(id, qty) {
     let query = "UPDATE products SET quantity = quantity - " + qty + " WHERE id = " + id + ";";
-    //console.log(query);
     connection.query(query, function (err, res) {
         if (err) throw err;
-
-        // else {
-        //     console.log("inventory has been updated");
-        // }
-    })
+            //console.log("inventory has been updated");
+    });
 }
+function manageSales(product, cost, department, price, qty) {
 
-function manageSales(newSale) {
-
-    let product = "'" + newSale.get(1) + "'";
-    //console.log("From products " + product);
-    let department = "'" + newSale.get(2) + "'";
-    //console.log("From department " + department);
-    let price = newSale.get(3);
-    //console.log("From price " + price);
-    let quantity = newSale.get(4);
-    //console.log("From quantity " + quantity);
-    let cost = newSale.get(5);
-    //console.log("From cost " + cost);
-    let qty = newSale.get(6);
-    //console.log("From qty " + qty);
     let insert = "INSERT INTO sales ( trans_product, trans_total, trans_department, unit_price, unit_total ) ";
-    let values = "VALUES ( " + product + ", " + cost + ", " + department + ", " + price + ", " + qty + " );";
+    let values = "VALUES ( " + "'" + product + "'"
+        +", " + cost + ", " + "'" + department + "'"
+         + ", " + price + ", " + qty + " );";
     let query = insert + values;
-    //console.log("From query " + query);
     connection.query(query, function (err, res) {
         if (err) throw err;
-
-        //else console.log("Added to sales table");
+        //console.log("New transaction added to sales table");
     });
 }
 
 function exitBamazon() {
-    //connection.end();
+    connection.end();
     console.log("Thanks for visiting Bamazon");
 }
 
