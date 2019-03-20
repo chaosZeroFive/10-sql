@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+.env
+.vscode
+bamazonManager.js
+bamazonSupervisor.js
+package-lock.json
+prompts.js
+actions.js
