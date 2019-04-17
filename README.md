@@ -70,4 +70,7 @@ Your root directory should look like this
 ## How to Use
 
 Open a Terminal, navigate to the root directory, and type:
-> node bamazon.js
+> node bamazonCustomer.js
+
+### Product List Display & Customer Selection
+![products](/demo/products.png)
