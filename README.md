@@ -72,6 +72,8 @@ Your root directory should look like this
 Open a Terminal, navigate to the root directory, and type:
 > node bamazonCustomer.js
 
+Then follow the prompts in the terminal
+
 ### Product List Display & Customer Selection
 ![products](/demo/products.png)
 
