@@ -74,3 +74,6 @@ Open a Terminal, navigate to the root directory, and type:
 
 ### Product List Display & Customer Selection
 ![products](/demo/products.png)
+
+### Customer Sale Completion
+![sale](/demo/sale.png)
